@@ -1,0 +1,165 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Checkout</h2>
+                    <div class="breadcrumb__option">
+                        <a href="./index.html">Home</a>
+                        <span>Checkout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h6><span class="icon_tag_alt" id="msg"></span> <a href="#">
+                </h6>
+            </div>
+        </div>
+        <div class="checkout__form">
+            <h4>Billing Details</h4>
+            <form method="post" action="checkout">
+                {% csrf_token %}
+                <input type="hidden" id="itemsJson" name="itemsJson">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Fist Name<span>*</span></p>
+                                    <input type="text" id="first_name" name="first_name">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Last Name<span>*</span></p>
+                                    <input type="text" id="last_name" name="last_name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Phone<span>*</span></p>
+                                    <input type="tel" id="phone" name="phone">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Email<span>*</span></p>
+                                    <input type="email" id="email" name="email">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkout__input">
+                            <p>Address<span>*</span></p>
+                            <input type="text" placeholder="Street Address" class="checkout__input__add" id="address1"
+                                name="address1">
+                            <p>Address line 2<span>*</span></p>
+                            <input type="text" placeholder="Apartment, suite, unite ect (optinal)"
+                                class="checkout__input__add" id="address2" name="address2">
+                        </div>
+                        <div class="checkout__input">
+                            <p>Town/City<span>*</span></p>
+                            <input type="text" id="city" name="city">
+                        </div>
+                        <div class="checkout__input">
+                            <p>State<span>*</span></p>
+                            <input type="text" id="state" name="state">
+                        </div>
+                        <div class="checkout__input">
+                            <p>Postcode / ZIP<span>*</span></p>
+                            <input type="text" id="pincode" name="pincode">
+                        </div>
+
+
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="checkout__order">
+                            <h4>Your Order</h4>
+                            <h5>
+                                <div class="checkout__order__products " id="items">Products <span>Total</span></div>
+                            </h5>
+                            <ul>
+
+
+                            </ul>
+                            <div class="checkout__order__subtotal"> Subtotal :
+                                <span id="totalPrice">
+                                <li></li>
+                            </span>
+                            </div>
+                           
+                            <!-- <div class="checkout__order__total" id="totalPrice"> Total <span></span></div> -->
+
+                            <button type="submit" class="site-btn">PLACE ORDER</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- Checkout Section End -->
+{% endblock %}
+{% block js %}
+<script>
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+    } else {
+        cart = JSON.parse(localStorage.getItem('cart'));
+    }
+    console.log(cart);
+    var sum = 0;
+    var totalPrice = 0;
+    if ($.isEmptyObject(cart)) {
+        //if cart is empty
+        mystr = `<p><h2><b>The cart is empty, to continue please add some items to your cart.<br>Thank You</b></h2></p>`
+        $('#msg').append(mystr);
+    }
+    else {
+        for (item in cart) {
+            let name = cart[item][1];
+            let Qty = cart[item][0];
+            let itemprice = cart[item][2];
+            sum = sum + Qty;
+            totalPrice = totalPrice + Qty* itemprice;
+            mystr = `<li>${name} <span>(${Qty})${itemprice}₹</span><span></span></li>`
+            $('#items').append(mystr)
+            mystr = `<span>${totalPrice}</span>`
+            $('#totalPrice').append(mystr)
+        }
+    }
+    document.getElementById('cart').innerHTML = sum;
+    document.getElementById('totalPrice').innerHTML = totalPrice;
+    $('#itemsJson').val(JSON.stringify(cart));
+    $('#itemsJson').val(JSON.stringify(cart));
+    {% if thank %}
+    alert('Thanks for ordering with us. Your order is is {{id}}. Use it to track your order using our order tracker');
+    localStorage.clear();
+    document.location = "/index";
+    {% endif %}
+
+
+
+
+
+</script>
+
+{% endblock %}
